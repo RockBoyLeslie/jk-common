@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class ParamConfigParserTest {
 
-    private static final int EXEPECTED_NODE_SIZE = 1;
+    private static final int EXEPECTED_NODE_SIZE = 2;
     
     @Test
     public void testParser() {
