@@ -7,7 +7,7 @@
 		<Arg name="keyName" value="ID_FUND_TRADE_DATE" />
 	</Param>
 	
-	<Param name="FUND_TRADE_DATE" interval="60"
+	<Param name="EMALL_CONTEXT" interval="60"
 		class="com.jk.common.param.handler.LoadPropertiesParamHandler">
 		<Arg name="file" value="resources/test.properties" />
 	</Param>
