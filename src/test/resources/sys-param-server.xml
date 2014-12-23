@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="GB2312"?>
 <Params>
-
 	<Param name="FUND_TRADE_DATE" interval="60"
 		class="com.jk.common.param.handler.LoadDBParamHandler">
 		<Arg name="sqlName" value="fundTradeDate" />
