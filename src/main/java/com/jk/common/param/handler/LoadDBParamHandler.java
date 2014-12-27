@@ -28,7 +28,6 @@ public class LoadDBParamHandler extends AbstractParamHandler {
     private String keyName;
 
     @Override
-    @SuppressWarnings({ "unchecked" })
     public void load() throws ParamContextException {
         ProxyDAO dao = getParamProxyDAO();
 
