@@ -1,7 +1,8 @@
-package com.jk.common.zookeeper;
+package com.jk.common.zookeeper.util;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
+
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -21,7 +22,7 @@ public final class ConnectionHelper {
         ZooKeeper zk = new ZooKeeper(host, timeout, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
-                if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
+                if (event.getState() == Event.KeeperState.SyncConnected) {
                     connectSignal.countDown();
                 }
             }
@@ -30,7 +31,7 @@ public final class ConnectionHelper {
         try {
             connectSignal.await();
         } catch (InterruptedException e) {
-            LOG.error("connection sign thread interrupted", e);
+            LOG.error("zookeeper connection signal thread interrupted", e);
         }
 
         return zk;
@@ -38,6 +39,16 @@ public final class ConnectionHelper {
 
     public static ZooKeeper connect(String host) throws IOException {
         return connect(host, SESSION_TIME_OUT);
+    }
+
+    public static void close(ZooKeeper zk) {
+        if (zk != null) {
+            try {
+                zk.close();
+            } catch (InterruptedException e) {
+                LOG.error("zookeeper connection close thread interrupted", e);
+            }
+        }
     }
 
 }
