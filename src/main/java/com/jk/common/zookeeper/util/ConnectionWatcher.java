@@ -16,12 +16,12 @@ public class ConnectionWatcher implements Watcher {
     protected ZooKeeper zk;
     private CountDownLatch connectSignal = new CountDownLatch(1);
 
-    public void connect(String host) throws IOException {
-        connect(host, SESSION_TIME_OUT);
+    public void connect(String hosts) throws IOException {
+        connect(hosts, SESSION_TIME_OUT);
     }
 
-    public void connect(String host, int sessionTimeout) throws IOException {
-        zk = new ZooKeeper(host, sessionTimeout, this);
+    public void connect(String hosts, int sessionTimeout) throws IOException {
+        zk = new ZooKeeper(hosts, sessionTimeout, this);
         try {
             connectSignal.await();
         } catch (InterruptedException e) {

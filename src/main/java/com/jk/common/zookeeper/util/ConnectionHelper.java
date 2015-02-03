@@ -16,10 +16,10 @@ public final class ConnectionHelper {
     private ConnectionHelper() {
     }
 
-    public static ZooKeeper connect(String host, int timeout) throws IOException {
+    public static ZooKeeper connect(String hosts, int timeout) throws IOException {
         final CountDownLatch connectSignal = new CountDownLatch(1);
 
-        ZooKeeper zk = new ZooKeeper(host, timeout, new Watcher() {
+        ZooKeeper zk = new ZooKeeper(hosts, timeout, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
                 if (event.getState() == Event.KeeperState.SyncConnected) {
@@ -37,8 +37,8 @@ public final class ConnectionHelper {
         return zk;
     }
 
-    public static ZooKeeper connect(String host) throws IOException {
-        return connect(host, SESSION_TIME_OUT);
+    public static ZooKeeper connect(String hosts) throws IOException {
+        return connect(hosts, SESSION_TIME_OUT);
     }
 
     public static void close(ZooKeeper zk) {

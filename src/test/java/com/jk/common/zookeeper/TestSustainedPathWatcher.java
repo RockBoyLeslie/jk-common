@@ -19,7 +19,7 @@ public class TestSustainedPathWatcher extends AbstractSustainedPathWatcher {
     }
 
     public static void main(String[] args) throws Exception {
-        ZooKeeper zk = ConnectionHelper.connect("localhost:2182");
+        ZooKeeper zk = ConnectionHelper.connect("localhost:2181,localhost:2182,localhost:2183");
         TestSustainedPathWatcher watcher = new TestSustainedPathWatcher(zk);
         watcher.sustainedWatch("/");
     }
