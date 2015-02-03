@@ -1,13 +1,8 @@
 package com.jk.common.zookeeper.watcher;
 
-import com.jk.common.zookeeper.util.ConnectionHelper;
-
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
