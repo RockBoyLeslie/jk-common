@@ -5,7 +5,6 @@ import org.apache.http.HttpResponse;
 /**
  * Interface for response handler to handle errors of a HTTP response
  *
- * @author Michael Hoglan
  */
 public interface ResponseErrorHandler {
     /**
