@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -15,8 +14,7 @@ public class RedisTemplate {
 
     private static final Logger LOG = Logger.getLogger(RedisTemplate.class);
 
-    @Autowired
-    private RedisClient client;
+    private RedisClient redisClient;
 
     public RedisTemplate() {
 
@@ -31,11 +29,45 @@ public class RedisTemplate {
         }, index);
     }
 
+    public boolean hexists(String key, String field) {
+        return execute(new RedisCallback<Boolean>() {
+
+            @Override
+            public Boolean call(Jedis jedis, Object params) {
+                String key = ((Object[]) params)[0].toString();
+                String field = ((Object[]) params)[1].toString();
+                return jedis.hexists(key, field);
+            }
+        });
+    }
+    
+    public boolean hexists(byte[] key, byte[] field) {
+        return execute(new RedisCallback<Boolean>() {
+
+            @Override
+            public Boolean call(Jedis jedis, Object params) {
+                byte[] key = (byte[]) ((Object[]) params)[0];
+                byte[] field = (byte[]) ((Object[]) params)[1];
+                return jedis.hexists(key, field);
+            }
+        }, key, field);
+    }
+    
     public String hget(String key, String field) {
         return execute(new RedisCallback<String>() {
             public String call(Jedis jedis, Object parms) {
                 String key = ((Object[]) parms)[0].toString();
                 String field = ((Object[]) parms)[1].toString();
+                return jedis.hget(key, field);
+            }
+        }, key, field);
+    }
+    
+    public byte[] hget(byte[] key, byte[] field) {
+        return execute(new RedisCallback<byte[]>() {
+            public byte[] call(Jedis jedis, Object parms) {
+                byte[] key = (byte[]) ((Object[]) parms)[0];
+                byte[] field = (byte[]) ((Object[]) parms)[1];
                 return jedis.hget(key, field);
             }
         }, key, field);
@@ -47,6 +79,18 @@ public class RedisTemplate {
                 String key = ((Object[]) parms)[0].toString();
                 String field = ((Object[]) parms)[1].toString();
                 String value = ((Object[]) parms)[2].toString();
+                jedis.hset(key, field, value);
+                return null;
+            }
+        }, key, field, value);
+    }
+    
+    public void hset(byte[] key, byte[] field, byte[] value) {
+        execute(new RedisCallback<String>() {
+            public String call(Jedis jedis, Object parms) {
+                byte[] key = (byte[]) ((Object[]) parms)[0];
+                byte[] field = (byte[]) ((Object[]) parms)[1];
+                byte[] value = (byte[]) ((Object[]) parms)[2];
                 jedis.hset(key, field, value);
                 return null;
             }
@@ -249,22 +293,26 @@ public class RedisTemplate {
     protected <T> T execute(RedisCallback<T> callback, Object... args) {
         Jedis jedis = null;
         try {
-            jedis = client.getRedis();
+            jedis = redisClient.getRedis();
             return callback.call(jedis, args);
         } catch (JedisConnectionException e) {
             LOG.error("redis connect failed", e);
 
             if (jedis != null) {
-                client.returnBrokeRedis(jedis);
+                redisClient.returnBrokeRedis(jedis);
             }
-            jedis = client.getRedis();
+            jedis = redisClient.getRedis();
         } catch (Exception e) {
             LOG.error("Exception happens when get redis connection", e);
         } finally {
             if (jedis != null) {
-                client.returnRedis(jedis);
+                redisClient.returnRedis(jedis);
             }
         }
         return null;
+    }
+    
+    public void setRedisClient(RedisClient redisClient) {
+        this.redisClient = redisClient;
     }
 }
