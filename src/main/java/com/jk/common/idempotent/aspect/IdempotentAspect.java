@@ -42,11 +42,12 @@ public class IdempotentAspect {
         }
 
         IdempotentRequestKey key = new IdempotentRequestKey(joinPoint.getSignature(), request);
-        if (idempotentRequestStore.contains(key)) {
+        
+        // 用当前幂等因子向redis插入kv， 如果插入成功， 则获得分布式锁并执行业务操作
+        // 若没有获得锁， 则直接做结果查询处理。
+        boolean locked = idempotentRequestStore.storenx(key);
+        if (!locked) {
             return retrieveResponse(key);
-        } else {
-            logger.debug("Storing the first request {}", key);
-            idempotentRequestStore.store(key);
         }
 
         Object result = joinPoint.proceed();
@@ -59,8 +60,11 @@ public class IdempotentAspect {
     }
 
     private Object retrieveResponse(IdempotentRequestKey key) {
+        if(!idempotentRequestStore.contains(key)) {
+            return null;
+        }
+        
         long start = System.currentTimeMillis();
-
         while (true) {
             IdempotentResponseWrapper response = idempotentRequestStore.getResponse(key);
             if (response != null && response.getResponse() != null) {

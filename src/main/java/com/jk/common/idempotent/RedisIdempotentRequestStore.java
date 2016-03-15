@@ -10,36 +10,38 @@ import org.springframework.util.SerializationUtils;
  */
 public class RedisIdempotentRequestStore implements IdempotentRequestStore {
 
-    private final static String DEFAULT_KEY = "idempotentRequestStore";
-
-    private final static byte[] DEFAULT_KEY_SERIAL = SerializationUtils.serialize(DEFAULT_KEY);
+    private final static String DEFAULT_KEY_PREFIX = "idempotent_";
 
     private RedisTemplate redisTemplate;
 
     @Override
     public boolean contains(IdempotentRequestKey key) {
-        return redisTemplate.hexists(DEFAULT_KEY_SERIAL, SerializationUtils.serialize(key.toString()));
+        return redisTemplate.exists(SerializationUtils.serialize(getKey(key)));
     }
 
     @Override
-    public void store(IdempotentRequestKey key) {
+    public boolean storenx(IdempotentRequestKey key) {
         byte[] value = SerializationUtils.serialize(new IdempotentResponseWrapper(null));
-        redisTemplate.hset(DEFAULT_KEY_SERIAL, SerializationUtils.serialize(key.toString()), value);
+        return redisTemplate.setnx(SerializationUtils.serialize(getKey(key)), value);
     }
 
     @Override
     public void setResponse(IdempotentRequestKey key, IdempotentResponseWrapper response) {
-        redisTemplate.hset(DEFAULT_KEY_SERIAL, SerializationUtils.serialize(key.toString()), SerializationUtils.serialize(response));
+        redisTemplate.set(SerializationUtils.serialize(getKey(key)), SerializationUtils.serialize(response));
     }
 
     @Override
     public IdempotentResponseWrapper getResponse(IdempotentRequestKey key) {
-        byte[] response = redisTemplate.hget(DEFAULT_KEY_SERIAL, SerializationUtils.serialize(key.toString()));
+        byte[] response = redisTemplate.getByte(SerializationUtils.serialize(getKey(key)));
         return response == null ? null : (IdempotentResponseWrapper) SerializationUtils.deserialize(response);
     }
 
     public void setRedisTemplate(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
+    }
+    
+    private String getKey(IdempotentRequestKey key) {
+        return DEFAULT_KEY_PREFIX + key.toString();
     }
     
 }

@@ -29,6 +29,17 @@ public class RedisTemplate {
         }, index);
     }
 
+    public boolean exists(byte[] key) {
+        return execute(new RedisCallback<Boolean>() {
+
+            @Override
+            public Boolean call(Jedis jedis, Object params) {
+                byte[] key = (byte[]) ((Object[]) params)[0];
+                return jedis.exists(key);
+            }
+        }, key);
+    }
+    
     public boolean hexists(String key, String field) {
         return execute(new RedisCallback<Boolean>() {
 
@@ -113,9 +124,18 @@ public class RedisTemplate {
                 try {
                     return jedis.get(key.getBytes("UTF-8"));
                 } catch (UnsupportedEncodingException e) {
-                    LOG.error(String.format("unsupported encoding %s", "UTF-8"), e);
+                    LOG.error(e);
                 }
                 return null;
+            }
+        }, key);
+    }
+    
+    public byte[] getByte(byte[] key) {
+        return execute(new RedisCallback<byte[]>() {
+            public byte[] call(Jedis jedis, Object parms) {
+                byte[] key = (byte[]) ((Object[]) parms)[0];
+                return jedis.get(key);
             }
         }, key);
     }
@@ -145,7 +165,28 @@ public class RedisTemplate {
             }
         }, key, value);
     }
+    
+    public void set(byte[] key, byte[] value) {
+        execute(new RedisCallback<String>() {
+            public String call(Jedis jedis, Object parms) {
+                byte[] key = (byte[]) ((Object[]) parms)[0];
+                byte[] value = (byte[]) ((Object[]) parms)[1];
+                return jedis.set(key, value);
+            }
+        }, key, value);
+    }
 
+    public boolean setnx(byte[] key, byte[] value) {
+        return execute(new RedisCallback<Boolean>() {
+            public Boolean call(Jedis jedis, Object parms) {
+                byte[] key = (byte[]) ((Object[]) parms)[0];
+                byte[] value = (byte[]) ((Object[]) parms)[1];
+
+                return jedis.setnx(key, value) > 0;
+            }
+        }, key, value);
+    }
+    
     // 批量Set
     public void setPipeLine(Map<String, String> map) {
         execute(new RedisCallback<String>() {

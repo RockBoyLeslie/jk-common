@@ -73,7 +73,7 @@ public class IdempotentDemoRequest implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("Request [id=%s]", id);
+        return String.format("request[id=%s]", id);
     }
 }
 

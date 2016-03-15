@@ -33,6 +33,6 @@ public class IdempotentRequestWrapper implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("IdempotentRequestWrapper [request=%s]", request);
+        return String.format("IdempotentRequestWrapper[request=%s]", request);
     }
 }

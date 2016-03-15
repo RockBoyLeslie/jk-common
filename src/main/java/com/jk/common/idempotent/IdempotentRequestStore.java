@@ -9,7 +9,7 @@ public interface IdempotentRequestStore {
 
     boolean contains(IdempotentRequestKey key);
 
-    void store(IdempotentRequestKey key);
+    boolean storenx(IdempotentRequestKey key);
 
     void setResponse(IdempotentRequestKey key, IdempotentResponseWrapper response);
 

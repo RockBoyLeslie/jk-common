@@ -41,7 +41,7 @@ public class IdempotentRequestKey implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Key [signature=%s, request=%s]", signature.toLongString(), request);
+        return String.format("key[signature=%s,request=%s]", signature.getDeclaringTypeName() + "." + signature.getName(), request);
     }
     
     public IdempotentRequestWrapper getRequest() {

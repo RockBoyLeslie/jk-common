@@ -34,9 +34,9 @@ public class IdempotentTest {
         
         IdempotentService idempotentService = (IdempotentService) application.getBean("idempotentService");
         
-        System.out.println(idempotentService.test(new IdempotentDemoRequest("1")));
+        System.out.println(idempotentService.test(new IdempotentDemoRequest("14")));
         Thread.sleep(10);
-        System.out.println(idempotentService.test(new IdempotentDemoRequest("1")));
+        System.out.println(idempotentService.test(new IdempotentDemoRequest("14")));
     }
     
 }
